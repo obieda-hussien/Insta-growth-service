@@ -90,15 +90,157 @@ body {
     min-height: 100vh;
 }
 
-/* Selection */
-::selection {
-    background: var(--neon-blue);
-    color: white;
+/* Enhanced Performance and Modern Effects */
+
+/* Scroll snapping for better mobile experience */
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    scroll-snap-type: y proximity;
 }
 
-::-moz-selection {
+section {
+    scroll-snap-align: start;
+}
+
+/* GPU acceleration for performance */
+.glass,
+.btn,
+.feature-card,
+.pricing-card,
+.testimonial-card {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Enhanced glassmorphism with better performance */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+    position: relative;
+    isolation: isolate;
+}
+
+.glass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Enhanced particle system */
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
     background: var(--neon-blue);
-    color: white;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: float 6s ease-in-out infinite;
+    will-change: transform;
+}
+
+/* Better mobile scrolling performance */
+@media (max-width: 767px) {
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+    
+    .hero-section,
+    .features-section,
+    .how-it-works-section,
+    .pricing-section,
+    .testimonials-section,
+    .contact-section {
+        scroll-snap-align: start;
+    }
+}
+
+/* Modern focus indicators */
+*:focus-visible {
+    outline: 2px solid var(--neon-blue);
+    outline-offset: 3px;
+    border-radius: 4px;
+    transition: outline-offset 0.2s ease;
+}
+
+/* Enhanced loading states */
+.loading-state {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading-state::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid var(--neon-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Modern micro-interactions */
+.interactive-element {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.interactive-element:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.interactive-element:active {
+    transform: translateY(0);
+    transition-duration: 0.1s;
+}
+
+/* Smooth gradient animations for background */
+body.animate-gradientBG {
+    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+
+/* Enhanced hover effects for desktop */
+@media (hover: hover) and (pointer: fine) {
+    .btn:hover {
+        transform: translateY(-3px) scale(1.02);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px) rotateY(5deg);
+        box-shadow: 0 20px 40px rgba(31, 38, 135, 0.3);
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-8px) scale(1.02);
+    }
+    
+    .nav-link:hover {
+        transform: translateY(-1px);
+    }
 }
 
 /* Scrollbar */
@@ -454,7 +596,7 @@ body {
     animation-delay: 0.4s;
 }
 
-/* Buttons */
+/* Modern Enhanced Buttons */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -467,73 +609,188 @@ body {
     font-size: 1rem;
     text-decoration: none;
     cursor: pointer;
-    transition: all var(--transition-normal);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
+    transform: translate3d(0, 0, 0);
+    will-change: transform, box-shadow;
+    isolation: isolate;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+    z-index: -1;
+}
+
+.btn:hover::before {
+    transform: translateX(100%);
 }
 
 .btn-primary {
     background: var(--secondary-gradient);
+    background-size: 200% 200%;
     color: white;
     box-shadow: 0 4px 20px rgba(245, 87, 108, 0.4);
+    animation: gradient-shift 3s ease infinite;
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(245, 87, 108, 0.6);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(245, 87, 108, 0.6);
+    animation-play-state: paused;
+}
+
+.btn-primary:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
 }
 
 .btn-secondary {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.05);
     color: white;
     border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .btn-secondary:hover {
     background: var(--glass-bg);
     transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .btn-outline {
     background: transparent;
     color: var(--neon-blue);
     border: 2px solid var(--neon-blue);
+    position: relative;
+}
+
+.btn-outline::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: var(--neon-blue);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
 }
 
 .btn-outline:hover {
-    background: var(--neon-blue);
     color: white;
-    box-shadow: 0 0 20px var(--neon-blue);
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    border-color: var(--neon-blue);
+}
+
+.btn-outline:hover::after {
+    width: 100%;
 }
 
 .btn-large {
     padding: var(--space-lg) var(--space-xl);
     font-size: 1.1rem;
+    border-radius: var(--radius-lg);
 }
 
-/* Ripple Effect */
+/* Enhanced Ripple Effect */
 .ripple-effect {
     position: relative;
     overflow: hidden;
 }
 
-.ripple-effect::before {
+.btn i {
+    transition: transform 0.3s ease;
+}
+
+.btn:hover i {
+    transform: translateX(3px);
+}
+
+/* Magnetic Button Effect */
+.btn.magnetic {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading State */
+.btn.loading {
+    pointer-events: none;
+    position: relative;
+}
+
+.btn.loading::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.3);
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
     border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+    animation: spin 1s linear infinite;
 }
 
-.ripple-effect:active::before {
-    width: 300px;
-    height: 300px;
+.btn.loading span {
+    opacity: 0;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Button Group */
+.btn-group {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-group .btn {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Success State Animation */
+.btn.success {
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    animation: successPulse 0.6s ease;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Modern Glassmorphism Button */
+.btn.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+
+.btn.glass:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
 }
 
 /* Section Styling */
