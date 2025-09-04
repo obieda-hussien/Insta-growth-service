@@ -1,0 +1,19 @@
+{
+  "name": "instagram-growth-service",
+  "version": "1.0.0",
+  "description": "Modern Instagram Growth Service Website",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=3000",
+    "build": "echo 'Build completed'",
+    "deploy": "gh-pages -d ."
+  },
+  "keywords": ["instagram", "growth", "followers", "social-media"],
+  "author": "Instagram Growth Service",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "gh-pages": "^6.0.0"
+  },
+  "dependencies": {}
+}
