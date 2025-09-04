@@ -83,17 +83,26 @@ class AnimationController {
     }
 
     /**
-     * Animate element when it comes into view
+     * Animate element when it comes into view with enhanced easing
      * @param {Element} element - Element to animate
      */
     animateElement(element) {
         const animationType = element.dataset.animate || 'fadeInUp';
-        const delay = element.dataset.delay || 0;
+        const delay = parseInt(element.dataset.delay) || 0;
+        const duration = parseInt(element.dataset.duration) || 800;
 
+        // Add GPU acceleration for better performance
+        element.style.willChange = 'transform, opacity';
+        
         setTimeout(() => {
             element.classList.add('animate-' + animationType);
             element.style.opacity = '1';
             element.style.transform = 'none';
+            
+            // Remove will-change after animation completes
+            setTimeout(() => {
+                element.style.willChange = 'auto';
+            }, duration);
         }, delay);
     }
 
@@ -326,12 +335,59 @@ class AnimationController {
     }
 
     /**
-     * Setup hover effects
+     * Setup enhanced hover effects with modern interactions
      */
     setupHoverEffects() {
         this.setupRippleEffect();
         this.setupMagneticEffect();
         this.setupTiltEffect();
+        this.setupModernButtonEffects();
+    }
+
+    /**
+     * Setup modern button effects
+     */
+    setupModernButtonEffects() {
+        const buttons = DOM.selectAll('.btn');
+        
+        buttons.forEach(button => {
+            // Add magnetic effect for desktop
+            if (window.innerWidth > 768) {
+                DOM.on(button, 'mousemove', (e) => {
+                    const rect = button.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    
+                    const moveX = x * 0.15;
+                    const moveY = y * 0.15;
+                    
+                    button.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                });
+                
+                DOM.on(button, 'mouseleave', () => {
+                    button.style.transform = 'translate(0, 0)';
+                });
+            }
+            
+            // Add modern loading state
+            DOM.on(button, 'click', () => {
+                if (button.classList.contains('loading')) return;
+                
+                const originalText = button.innerHTML;
+                button.classList.add('loading');
+                
+                // Remove loading state after operation
+                setTimeout(() => {
+                    button.classList.remove('loading');
+                    
+                    // Add success state briefly
+                    button.classList.add('success');
+                    setTimeout(() => {
+                        button.classList.remove('success');
+                    }, 600);
+                }, 1500);
+            });
+        });
     }
 
     /**

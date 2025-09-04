@@ -346,7 +346,7 @@ class InstagramGrowthApp {
     }
 
     /**
-     * Setup smooth scrolling for navigation links
+     * Setup smooth scrolling for navigation links with modern scroll snapping
      */
     setupSmoothScrolling() {
         const navLinks = DOM.selectAll('a[href^="#"]');
@@ -362,10 +362,8 @@ class InstagramGrowthApp {
                     const navbarHeight = DOM.select('.navbar').offsetHeight;
                     const targetPosition = targetElement.offsetTop - navbarHeight - 20;
                     
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
+                    // Enhanced smooth scroll with better easing
+                    this.smoothScrollTo(targetPosition, 800);
                     
                     // Track navigation
                     this.trackEvent('navigation', targetId);
@@ -375,6 +373,71 @@ class InstagramGrowthApp {
 
         // Setup scroll spy for active navigation
         this.setupScrollSpy();
+        
+        // Setup parallax scrolling
+        this.setupParallaxScrolling();
+    }
+
+    /**
+     * Enhanced smooth scroll with custom easing
+     * @param {number} target - Target scroll position
+     * @param {number} duration - Animation duration
+     */
+    smoothScrollTo(target, duration = 800) {
+        const start = window.pageYOffset;
+        const distance = target - start;
+        const startTime = performance.now();
+
+        const easeInOutCubic = (t) => {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        };
+
+        const animateScroll = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            const easeProgress = easeInOutCubic(progress);
+            const currentPosition = start + (distance * easeProgress);
+            
+            window.scrollTo(0, currentPosition);
+            
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            }
+        };
+
+        requestAnimationFrame(animateScroll);
+    }
+
+    /**
+     * Setup parallax scrolling effects
+     */
+    setupParallaxScrolling() {
+        const parallaxElements = DOM.selectAll('.parallax, .particles-container');
+        
+        if (parallaxElements.length === 0) return;
+
+        let ticking = false;
+
+        const updateParallax = () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.3;
+            const rateAlt = scrolled * -0.5;
+
+            parallaxElements.forEach((element, index) => {
+                const speed = index % 2 === 0 ? rate : rateAlt;
+                element.style.transform = `translate3d(0, ${speed}px, 0)`;
+            });
+
+            ticking = false;
+        };
+
+        DOM.on(window, 'scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        });
     }
 
     /**
