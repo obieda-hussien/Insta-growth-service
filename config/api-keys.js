@@ -75,8 +75,9 @@ const API_CONFIG = {
     ]
 };
 
-// Demo/Development mode - using mock data instead of real APIs
-const DEMO_MODE = true;
+// Personal mode - direct access without authentication
+const DEMO_MODE = false;
+const PERSONAL_MODE = true;
 
 // Export configuration
 if (typeof module !== 'undefined' && module.exports) {
@@ -84,4 +85,5 @@ if (typeof module !== 'undefined' && module.exports) {
 } else {
     window.API_CONFIG = API_CONFIG;
     window.DEMO_MODE = DEMO_MODE;
+    window.PERSONAL_MODE = PERSONAL_MODE;
 }

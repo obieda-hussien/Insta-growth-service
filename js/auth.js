@@ -7,6 +7,20 @@ class AuthManager {
     }
 
     init() {
+        // Personal mode - skip authentication
+        if (window.PERSONAL_MODE) {
+            const personalUser = {
+                username: 'personal_user',
+                email: 'personal@instagram.com',
+                name: 'Instagram Growth User',
+                avatar: 'assets/images/default-avatar.svg',
+                provider: 'personal',
+                id: 'personal_123'
+            };
+            this.handleAuthSuccess(personalUser);
+            return;
+        }
+
         // Check for existing session
         const session = StorageManager.getSession();
         if (session) {

@@ -34,44 +34,98 @@ class InstagramAPI {
 
     // Generate demo profile data
     generateDemoProfile(username) {
-        const baseFollowers = Math.floor(Math.random() * 5000) + 1000;
-        const baseFollowing = Math.floor(Math.random() * 1000) + 100;
-        const basePosts = Math.floor(Math.random() * 500) + 50;
+        // Personal mode - use the provided username directly
+        const actualUsername = username || 'your_instagram';
+        
+        // More realistic base numbers for personal use
+        const baseFollowers = window.PERSONAL_MODE ? 
+            Math.floor(Math.random() * 2000) + 500 : // 500-2500 for personal
+            Math.floor(Math.random() * 5000) + 1000; // 1000-6000 for demo
+        
+        const baseFollowing = Math.floor(baseFollowers * (0.1 + Math.random() * 0.4)); // 10-50% of followers
+        const basePosts = Math.floor(Math.random() * 300) + 50;
 
         return {
-            username: username,
-            full_name: `${username.charAt(0).toUpperCase()}${username.slice(1)} User`,
-            biography: `Welcome to my Instagram! 📸\n✨ Living my best life\n🌟 Follow for amazing content`,
-            external_url: `https://example.com/${username}`,
-            profile_pic_url: `https://via.placeholder.com/150/667eea/ffffff?text=${username.charAt(0).toUpperCase()}`,
-            is_verified: Math.random() > 0.8,
-            is_private: Math.random() > 0.7,
+            username: actualUsername,
+            full_name: window.PERSONAL_MODE ? 
+                actualUsername.charAt(0).toUpperCase() + actualUsername.slice(1) :
+                `${actualUsername.charAt(0).toUpperCase()}${actualUsername.slice(1)} User`,
+            biography: window.PERSONAL_MODE ?
+                `🌟 Personal Growth Journey\n📈 Building my Instagram presence\n💪 Focused on authentic engagement` :
+                `Welcome to my Instagram! 📸\n✨ Living my best life\n🌟 Follow for amazing content`,
+            external_url: `https://linktr.ee/${actualUsername}`,
+            profile_pic_url: `https://ui-avatars.com/api/?name=${actualUsername}&size=150&background=667eea&color=ffffff&bold=true`,
+            is_verified: window.PERSONAL_MODE ? false : Math.random() > 0.8,
+            is_private: false, // Personal accounts usually public for growth
             follower_count: baseFollowers,
             following_count: baseFollowing,
             media_count: basePosts,
-            engagement_rate: (Math.random() * 5 + 1).toFixed(2),
-            avg_likes: Math.floor(baseFollowers * 0.05),
-            avg_comments: Math.floor(baseFollowers * 0.01),
-            last_post_date: Date.now() - (Math.random() * 7 * 24 * 60 * 60 * 1000),
-            recent_posts: this.generateDemoPosts(6),
-            created_at: Date.now()
+            engagement_rate: (Math.random() * 3 + 2).toFixed(2), // 2-5% engagement
+            avg_likes: Math.floor(baseFollowers * (0.03 + Math.random() * 0.05)), // 3-8% like rate
+            avg_comments: Math.floor(baseFollowers * (0.005 + Math.random() * 0.01)), // 0.5-1.5% comment rate
+            last_post_date: Date.now() - (Math.random() * 3 * 24 * 60 * 60 * 1000), // Within 3 days
+            recent_posts: this.generateDemoPosts(9), // 3x3 grid
+            created_at: Date.now(),
+            account_type: 'personal',
+            category: 'Personal Blog'
         };
     }
 
     // Generate demo posts
     generateDemoPosts(count) {
         const posts = [];
+        const postTypes = ['photo', 'carousel', 'reel'];
+        
         for (let i = 0; i < count; i++) {
+            const postType = postTypes[Math.floor(Math.random() * postTypes.length)];
+            const likes = Math.floor(Math.random() * 2000) + 50;
+            const comments = Math.floor(likes * (0.01 + Math.random() * 0.03)); // 1-4% comment rate
+            
             posts.push({
-                id: `demo_post_${i}`,
-                thumbnail_url: `https://picsum.photos/300/300?random=${Math.floor(Math.random() * 1000)}`,
-                like_count: Math.floor(Math.random() * 1000) + 10,
-                comment_count: Math.floor(Math.random() * 50) + 1,
-                timestamp: Date.now() - (i * 24 * 60 * 60 * 1000),
-                caption: `Amazing post #${i + 1} 📸 #instagram #life #beautiful`
+                id: `demo_post_${i}_${Date.now()}`,
+                type: postType,
+                thumbnail_url: `https://picsum.photos/300/300?random=${Math.floor(Math.random() * 1000) + i * 100}`,
+                like_count: likes,
+                comment_count: comments,
+                timestamp: Date.now() - (i * Math.random() * 7 * 24 * 60 * 60 * 1000), // Random within week
+                caption: this.generatePostCaption(i),
+                hashtags: this.generateHashtags(),
+                is_video: postType === 'reel',
+                video_view_count: postType === 'reel' ? likes * (2 + Math.random() * 8) : 0 // 2-10x likes for views
             });
         }
-        return posts;
+        return posts.sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+    }
+
+    // Generate realistic post captions
+    generatePostCaption(index) {
+        const captions = [
+            "Living my best life ✨ What's your favorite way to spend the weekend?",
+            "New day, new opportunities! 🌅 Ready to crush these goals 💪",
+            "Grateful for all the amazing people in my life 🙏❤️",
+            "Behind the scenes of my latest project 📸 Can't wait to share more!",
+            "Sometimes you need to take a step back and appreciate the journey 🌟",
+            "Working hard, staying focused 💼 Success doesn't happen overnight!",
+            "Sunset vibes and good energy ✨ Hope everyone had an amazing day!",
+            "Throwback to one of my favorite moments this year 📅💫",
+            "Excited to announce something special coming soon! 🎉 Stay tuned..."
+        ];
+        
+        return captions[index % captions.length];
+    }
+
+    // Generate relevant hashtags
+    generateHashtags() {
+        const hashtagSets = [
+            ['#lifestyle', '#motivation', '#inspiration', '#dailylife', '#positivevibes'],
+            ['#entrepreneur', '#businessmindset', '#success', '#hustle', '#goals'],
+            ['#photography', '#photooftheday', '#instagram', '#creative', '#art'],
+            ['#fitness', '#healthy', '#wellness', '#selfcare', '#mindfulness'],
+            ['#travel', '#adventure', '#explore', '#wanderlust', '#memories']
+        ];
+        
+        const selectedSet = hashtagSets[Math.floor(Math.random() * hashtagSets.length)];
+        return selectedSet.join(' ');
     }
 
     // Fetch profile with multiple API fallbacks

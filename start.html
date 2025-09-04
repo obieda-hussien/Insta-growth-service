@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Growing - Instagram Growth Service</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .start-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .start-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .start-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .start-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .input-label {
+            display: block;
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #00d4ff, #00b4d8);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .skip-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .skip-link:hover {
+            color: #00d4ff;
+        }
+
+        .features-list {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .features-list li {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .features-list i {
+            color: #00d4ff;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="start-container">
+        <div class="start-card">
+            <h1 class="start-title">
+                <i class="fab fa-instagram" style="color: #E1306C;"></i>
+                InstaGrow
+            </h1>
+            <p class="start-subtitle">
+                Enter your Instagram username to start growing your followers instantly
+            </p>
+
+            <form id="start-form">
+                <div class="input-group">
+                    <label class="input-label" for="username">Instagram Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        class="input-field" 
+                        placeholder="@yourusername" 
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="start-btn">
+                    <i class="fas fa-rocket"></i>
+                    Start Growing Now
+                </button>
+            </form>
+
+            <a href="dashboard.html" class="skip-link">
+                Skip and use demo mode instead
+            </a>
+
+            <ul class="features-list">
+                <li><i class="fas fa-check"></i> Real-time follower growth</li>
+                <li><i class="fas fa-check"></i> Advanced analytics</li>
+                <li><i class="fas fa-check"></i> No registration required</li>
+                <li><i class="fas fa-check"></i> Safe and secure</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('start-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            if (username) {
+                // Remove @ if user included it
+                const cleanUsername = username.replace('@', '');
+                
+                // Store username and redirect to dashboard
+                localStorage.setItem('instagram_username', cleanUsername);
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        // Auto-focus username input
+        window.addEventListener('load', () => {
+            document.getElementById('username').focus();
+        });
+    </script>
+</body>
+</html>

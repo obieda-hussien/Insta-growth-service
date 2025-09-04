@@ -405,6 +405,19 @@ class Dashboard {
             const user = authManager?.getCurrentUser();
             if (!user) return;
 
+            // Check for stored Instagram username from start page
+            const storedUsername = localStorage.getItem('instagram_username');
+            if (storedUsername && growthEngine) {
+                // Auto-start growth with stored username
+                setTimeout(() => {
+                    this.showNotification(`Starting growth for @${storedUsername}...`, 'info');
+                    growthEngine.startGrowth(storedUsername);
+                }, 1000);
+                
+                // Clear the stored username so it doesn't auto-start again
+                localStorage.removeItem('instagram_username');
+            }
+
             // Load growth data
             if (growthEngine) {
                 growthEngine.updateDashboard();

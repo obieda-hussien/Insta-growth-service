@@ -3,16 +3,20 @@ class GrowthEngine {
     constructor() {
         this.isRunning = false;
         this.settings = {
-            followersPerDay: 50,
-            speed: 'medium',
+            followersPerDay: 100, // Increased default for personal use
+            speed: 'fast',        // Default to fast for personal use
             targetUsername: null,
-            targetGoal: 1000
+            targetGoal: 10000,    // Higher default target
+            growthMode: 'aggressive', // New aggressive mode
+            engagementBoost: true,    // Auto-engagement features
+            smartTiming: true         // Optimal timing algorithms
         };
         this.growthData = [];
         this.growthInterval = null;
         this.lastGrowthTime = null;
         this.todayGrowth = 0;
         this.startDate = null;
+        this.growthMultiplier = 1.0;
     }
 
     // Initialize growth engine
@@ -179,12 +183,13 @@ class GrowthEngine {
     // Calculate growth interval based on speed
     getGrowthInterval() {
         const intervals = {
-            slow: 60 * 60 * 1000, // 1 hour
-            medium: 30 * 60 * 1000, // 30 minutes
-            fast: 15 * 60 * 1000 // 15 minutes
+            slow: 30 * 60 * 1000,  // 30 minutes (faster than before)
+            medium: 15 * 60 * 1000, // 15 minutes
+            fast: 5 * 60 * 1000,   // 5 minutes (much faster)
+            turbo: 2 * 60 * 1000   // 2 minutes (new turbo mode)
         };
         
-        return intervals[this.settings.speed] || intervals.medium;
+        return intervals[this.settings.speed] || intervals.fast;
     }
 
     // Simulate follower growth
@@ -219,34 +224,53 @@ class GrowthEngine {
 
     // Calculate growth amount for this interval
     calculateGrowthAmount() {
-        const { followersPerDay, speed } = this.settings;
+        const { followersPerDay, speed, growthMode } = this.settings;
         
         // Growth intervals per day based on speed
         const intervalsPerDay = {
-            slow: 24, // Every hour
-            medium: 48, // Every 30 minutes
-            fast: 96 // Every 15 minutes
+            slow: 48,   // Every 30 minutes
+            medium: 96, // Every 15 minutes
+            fast: 288,  // Every 5 minutes
+            turbo: 720  // Every 2 minutes
         };
         
-        const intervalCount = intervalsPerDay[speed] || intervalsPerDay.medium;
-        const baseGrowth = followersPerDay / intervalCount;
+        const intervalCount = intervalsPerDay[speed] || intervalsPerDay.fast;
+        let baseGrowth = followersPerDay / intervalCount;
         
-        // Add randomness for realistic growth (±30%)
-        const randomFactor = 0.7 + (Math.random() * 0.6); // 0.7 to 1.3
+        // Apply growth mode multipliers
+        const modeMultipliers = {
+            conservative: 0.7,
+            normal: 1.0,
+            aggressive: 1.8,
+            turbo: 2.5
+        };
+        
+        baseGrowth *= (modeMultipliers[growthMode] || 1.0);
+        
+        // Add randomness for realistic growth (±50% for more variation)
+        const randomFactor = 0.5 + (Math.random() * 1.0); // 0.5 to 1.5
         
         // Consider time of day (higher growth during peak hours)
         const timeMultiplier = this.getTimeMultiplier();
         
-        // Calculate final amount
-        let amount = Math.round(baseGrowth * randomFactor * timeMultiplier);
+        // Smart growth algorithm - burst patterns
+        const burstMultiplier = this.getBurstMultiplier();
         
-        // Ensure we don't exceed daily limit
-        const remainingToday = followersPerDay - this.todayGrowth;
-        if (amount > remainingToday) {
-            amount = Math.max(0, remainingToday);
+        // Calculate final amount
+        let amount = Math.round(baseGrowth * randomFactor * timeMultiplier * burstMultiplier);
+        
+        // Personal mode - more aggressive growth patterns
+        if (window.PERSONAL_MODE) {
+            amount = Math.round(amount * 1.5); // 50% boost for personal use
         }
         
-        return amount;
+        // Ensure we don't exceed reasonable daily limit but allow bursts
+        const maxBurst = Math.round(followersPerDay * 0.3); // Allow 30% daily limit in bursts
+        if (amount > maxBurst) {
+            amount = maxBurst;
+        }
+        
+        return Math.max(0, amount);
     }
 
     // Get time-based growth multiplier
@@ -652,6 +676,97 @@ class GrowthEngine {
             daysActive: Math.floor((Date.now() - this.startDate) / (24 * 60 * 60 * 1000))
         };
     }
+
+    // Enhanced growth algorithms for personal mode
+    getBurstMultiplier() {
+        // Create burst patterns for more realistic growth
+        const now = Date.now();
+        const hoursSinceStart = (now - (this.startDate || now)) / (1000 * 60 * 60);
+        
+        // Burst every 6-12 hours with random timing
+        const burstCycle = 8 + (Math.random() * 4); // 8-12 hours
+        const cyclePosition = (hoursSinceStart % burstCycle) / burstCycle;
+        
+        // Create wave pattern with bursts
+        if (cyclePosition > 0.7 && cyclePosition < 0.9) {
+            return 2.0 + Math.random(); // Burst phase: 2x-3x multiplier
+        } else if (cyclePosition > 0.9 || cyclePosition < 0.1) {
+            return 1.5 + (Math.random() * 0.5); // Post-burst: 1.5x-2x
+        }
+        
+        return 0.8 + (Math.random() * 0.4); // Normal: 0.8x-1.2x
+    }
+
+    // Smart timing algorithms
+    getTimeMultiplier() {
+        const hour = new Date().getHours();
+        
+        // Peak engagement hours: 6-9 AM, 12-2 PM, 7-10 PM
+        const peakHours = [6, 7, 8, 9, 12, 13, 14, 19, 20, 21, 22];
+        const isPeakHour = peakHours.includes(hour);
+        
+        // Weekend vs weekday
+        const dayOfWeek = new Date().getDay();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        
+        let multiplier = 1.0;
+        
+        if (isPeakHour) {
+            multiplier *= 1.8; // 80% boost during peak hours
+        } else if (hour >= 22 || hour <= 5) {
+            multiplier *= 0.4; // Reduced activity during night
+        }
+        
+        if (isWeekend) {
+            multiplier *= 1.2; // 20% boost on weekends
+        }
+        
+        return multiplier;
+    }
+
+    // Organic growth suggestions
+    getGrowthSuggestions() {
+        const suggestions = [
+            "🎯 Post consistently at peak engagement hours (7-9 AM, 7-9 PM)",
+            "📱 Use trending hashtags relevant to your niche",
+            "💬 Engage with your target audience's posts",
+            "📸 Share high-quality, visually appealing content",
+            "🤝 Collaborate with accounts in your niche",
+            "📊 Analyze your best-performing posts and replicate the strategy",
+            "🎬 Create engaging Stories and Reels for better reach",
+            "💡 Share valuable tips and insights in your field",
+            "🌟 Host giveaways and contests to boost engagement",
+            "🔄 Cross-promote on other social media platforms"
+        ];
+        
+        return suggestions.sort(() => Math.random() - 0.5).slice(0, 3);
+    }
+
+    // Enhanced settings for personal mode
+    getAdvancedSettings() {
+        return {
+            growthModes: [
+                { value: 'conservative', label: 'Conservative (Slow & Steady)', multiplier: 0.7 },
+                { value: 'normal', label: 'Normal (Balanced)', multiplier: 1.0 },
+                { value: 'aggressive', label: 'Aggressive (Fast Growth)', multiplier: 1.8 },
+                { value: 'turbo', label: 'Turbo (Maximum Speed)', multiplier: 2.5 }
+            ],
+            speedSettings: [
+                { value: 'slow', label: 'Slow (50-100/day)', interval: 30 },
+                { value: 'medium', label: 'Medium (100-200/day)', interval: 15 },
+                { value: 'fast', label: 'Fast (200-500/day)', interval: 5 },
+                { value: 'turbo', label: 'Turbo (500-1000/day)', interval: 2 }
+            ],
+            targetOptions: [
+                { value: 1000, label: '1K Followers' },
+                { value: 5000, label: '5K Followers' },
+                { value: 10000, label: '10K Followers' },
+                { value: 50000, label: '50K Followers' },
+                { value: 100000, label: '100K Followers' }
+            ]
+        };
+    }
+}
 }
 
 // Create global instance
