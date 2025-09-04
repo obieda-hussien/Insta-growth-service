@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Growth Dashboard - InstaGrow</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Axios for HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- CryptoJS for encryption -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Toastify notifications -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/instagram-mock.css">
+    <link rel="stylesheet" href="css/charts.css">
+</head>
+<body class="dashboard-body">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Loading Dashboard...</h3>
+            <p>Connecting to your Instagram account</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container" id="dashboard-container" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar glass">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fab fa-instagram"></i>
+                    <span>InstaGrow</span>
+                </div>
+            </div>
+            
+            <div class="user-profile-section">
+                <div class="profile-avatar" id="user-avatar">
+                    <img src="assets/images/default-avatar.svg" alt="Profile" id="avatar-img">
+                    <div class="status-indicator online"></div>
+                </div>
+                <h3 class="username" id="username-display">@loading...</h3>
+                <p class="follower-count animate-counter" id="follower-count">0</p>
+                <div class="growth-indicator">
+                    <span class="growth-badge positive" id="growth-badge">
+                        <i class="fas fa-arrow-up"></i>
+                        <span id="growth-amount">+0</span>
+                    </span>
+                </div>
+            </div>
+            
+            <nav class="dashboard-nav">
+                <a href="#overview" class="nav-item active" data-section="overview">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#growth-tools" class="nav-item" data-section="growth-tools">
+                    <i class="fas fa-rocket"></i>
+                    <span>Growth Tools</span>
+                </a>
+                <a href="#analytics" class="nav-item" data-section="analytics">
+                    <i class="fas fa-analytics"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#account-preview" class="nav-item" data-section="account-preview">
+                    <i class="fas fa-eye"></i>
+                    <span>Preview</span>
+                </a>
+                <a href="#settings" class="nav-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="btn btn-outline btn-small" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="dashboard-main">
+            <!-- Header with stats -->
+            <header class="dashboard-header">
+                <div class="header-content">
+                    <div class="page-title">
+                        <h1 id="page-title">Dashboard Overview</h1>
+                        <p id="page-subtitle">Monitor your Instagram growth in real-time</p>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="connect-account-btn">
+                            <i class="fab fa-instagram"></i>
+                            <span>Connect Account</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card glass" data-aos="fade-up" data-aos-delay="100">
+                        <div class="stat-icon">
+                            <i class="fas fa-users neon-blue"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="current-followers">0</span>
+                            <span class="stat-label">Current Followers</span>
+                            <span class="stat-change positive" id="followers-change">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card glass" data-aos="fade-up" data-aos-delay="200">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-up neon-green"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="gained-today">0</span>
+                            <span class="stat-label">Gained Today</span>
+                            <span class="stat-change positive" id="today-change">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card glass" data-aos="fade-up" data-aos-delay="300">
+                        <div class="stat-icon">
+                            <i class="fas fa-target neon-purple"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="target-followers">1000</span>
+                            <span class="stat-label">Target Goal</span>
+                            <span class="stat-change" id="target-progress">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card glass" data-aos="fade-up" data-aos-delay="400">
+                        <div class="stat-icon">
+                            <i class="fas fa-heart neon-pink"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="engagement-rate">0%</span>
+                            <span class="stat-label">Engagement Rate</span>
+                            <span class="stat-change positive" id="engagement-change">+0%</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content Sections -->
+            <div class="dashboard-content">
+                <!-- Overview Section -->
+                <section id="overview" class="content-section active">
+                    <div class="overview-grid">
+                        <!-- Quick Growth Chart -->
+                        <div class="overview-card glass" data-aos="fade-up">
+                            <h3>7-Day Growth</h3>
+                            <div class="mini-chart-container">
+                                <canvas id="overview-chart"></canvas>
+                            </div>
+                            <div class="chart-summary">
+                                <span class="summary-stat">
+                                    <strong id="week-growth">+0</strong> followers this week
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Growth Status -->
+                        <div class="overview-card glass" data-aos="fade-up" data-aos-delay="100">
+                            <h3>Growth Status</h3>
+                            <div class="growth-status-content">
+                                <div class="status-indicator-large" id="growth-status">
+                                    <div class="status-circle stopped">
+                                        <i class="fas fa-pause"></i>
+                                    </div>
+                                    <div class="status-text">
+                                        <h4>Growth Stopped</h4>
+                                        <p>Click to start growing</p>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-large" id="toggle-growth">
+                                    <i class="fas fa-play"></i>
+                                    <span>Start Growth</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Activity -->
+                        <div class="overview-card glass full-width" data-aos="fade-up" data-aos-delay="200">
+                            <h3>Recent Activity</h3>
+                            <div class="activity-feed" id="activity-feed">
+                                <div class="activity-item">
+                                    <i class="fas fa-user-plus activity-icon"></i>
+                                    <div class="activity-content">
+                                        <p><strong>Welcome!</strong> Your dashboard is ready</p>
+                                        <span class="activity-time">Just now</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Growth Tools Section -->
+                <section id="growth-tools" class="content-section">
+                    <div class="growth-tools-grid">
+                        <div class="growth-control-panel glass" data-aos="fade-up">
+                            <h2>Growth Control Panel</h2>
+                            
+                            <!-- Follower Settings -->
+                            <div class="control-group">
+                                <label for="followers-per-day">Target Followers per Day</label>
+                                <div class="range-container">
+                                    <input type="range" id="followers-per-day" min="10" max="100" value="50" class="custom-range">
+                                    <span class="range-value" id="followers-per-day-value">50</span>
+                                </div>
+                                <small class="help-text">Recommended: 30-70 for safe growth</small>
+                            </div>
+                            
+                            <!-- Speed Control -->
+                            <div class="control-group">
+                                <label for="growth-speed">Growth Speed</label>
+                                <select id="growth-speed" class="custom-select">
+                                    <option value="slow">Slow & Safe (10-20/day)</option>
+                                    <option value="medium" selected>Medium (30-50/day)</option>
+                                    <option value="fast">Fast (50-100/day)</option>
+                                </select>
+                                <small class="help-text">Medium speed is recommended for best results</small>
+                            </div>
+                            
+                            <!-- Target Setting -->
+                            <div class="control-group">
+                                <label for="target-goal">Target Goal</label>
+                                <input type="number" id="target-goal" class="custom-input" value="1000" min="100" max="100000" step="100">
+                                <small class="help-text">Set your follower goal</small>
+                            </div>
+                            
+                            <!-- Start/Stop Controls -->
+                            <div class="control-buttons">
+                                <button class="btn btn-primary btn-large" id="start-growth">
+                                    <i class="fas fa-play"></i>
+                                    <span>Start Growth</span>
+                                </button>
+                                <button class="btn btn-danger btn-large" id="stop-growth" disabled>
+                                    <i class="fas fa-pause"></i>
+                                    <span>Pause Growth</span>
+                                </button>
+                            </div>
+                            
+                            <div class="growth-info">
+                                <div class="info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Estimated completion: <strong id="completion-time">--</strong></span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Daily progress: <strong id="daily-progress">0/50</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Growth Schedule -->
+                        <div class="growth-schedule glass" data-aos="fade-up" data-aos-delay="100">
+                            <h3>Growth Schedule</h3>
+                            <div class="schedule-content">
+                                <div class="schedule-item">
+                                    <div class="time-slot">
+                                        <span class="time">9:00 AM</span>
+                                        <span class="status active">Active</span>
+                                    </div>
+                                    <div class="growth-amount">+15 followers</div>
+                                </div>
+                                <div class="schedule-item">
+                                    <div class="time-slot">
+                                        <span class="time">1:00 PM</span>
+                                        <span class="status pending">Pending</span>
+                                    </div>
+                                    <div class="growth-amount">+20 followers</div>
+                                </div>
+                                <div class="schedule-item">
+                                    <div class="time-slot">
+                                        <span class="time">6:00 PM</span>
+                                        <span class="status pending">Pending</span>
+                                    </div>
+                                    <div class="growth-amount">+15 followers</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Analytics Section -->
+                <section id="analytics" class="content-section">
+                    <div class="analytics-grid">
+                        <!-- Growth Chart -->
+                        <div class="chart-container glass" data-aos="fade-up">
+                            <div class="chart-header">
+                                <h3>Follower Growth Trend</h3>
+                                <div class="chart-controls">
+                                    <select id="chart-timeframe" class="chart-select">
+                                        <option value="7">Last 7 days</option>
+                                        <option value="30" selected>Last 30 days</option>
+                                        <option value="90">Last 90 days</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <canvas id="growth-chart"></canvas>
+                        </div>
+                        
+                        <!-- Before/After Comparison -->
+                        <div class="comparison-container glass" data-aos="fade-up" data-aos-delay="100">
+                            <h3>Before vs After</h3>
+                            <div class="comparison-grid">
+                                <div class="before-stats">
+                                    <h4>Before</h4>
+                                    <div class="stat-item">
+                                        <span class="label">Followers:</span>
+                                        <span class="value" id="before-followers">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="label">Following:</span>
+                                        <span class="value" id="before-following">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="label">Posts:</span>
+                                        <span class="value" id="before-posts">0</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="comparison-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                
+                                <div class="after-stats">
+                                    <h4>After</h4>
+                                    <div class="stat-item">
+                                        <span class="label">Followers:</span>
+                                        <span class="value neon-green" id="after-followers">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="label">Growth:</span>
+                                        <span class="value neon-blue" id="growth-amount-display">+0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="label">Growth %:</span>
+                                        <span class="value neon-purple" id="growth-percentage">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Performance Metrics -->
+                        <div class="metrics-container glass full-width" data-aos="fade-up" data-aos-delay="200">
+                            <h3>Performance Metrics</h3>
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <i class="fas fa-chart-bar metric-icon"></i>
+                                    <div class="metric-content">
+                                        <span class="metric-label">Avg. Daily Growth</span>
+                                        <span class="metric-value" id="avg-daily-growth">0</span>
+                                    </div>
+                                </div>
+                                <div class="metric-item">
+                                    <i class="fas fa-calendar-week metric-icon"></i>
+                                    <div class="metric-content">
+                                        <span class="metric-label">Best Day</span>
+                                        <span class="metric-value" id="best-day">--</span>
+                                    </div>
+                                </div>
+                                <div class="metric-item">
+                                    <i class="fas fa-trophy metric-icon"></i>
+                                    <div class="metric-content">
+                                        <span class="metric-label">Record Growth</span>
+                                        <span class="metric-value" id="record-growth">+0</span>
+                                    </div>
+                                </div>
+                                <div class="metric-item">
+                                    <i class="fas fa-clock metric-icon"></i>
+                                    <div class="metric-content">
+                                        <span class="metric-label">Growth Active</span>
+                                        <span class="metric-value" id="growth-duration">0 days</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Account Preview Section -->
+                <section id="account-preview" class="content-section">
+                    <div class="preview-container">
+                        <div class="instagram-preview glass" data-aos="fade-up">
+                            <h3>Account Preview</h3>
+                            
+                            <!-- Instagram-like Profile Display -->
+                            <div class="instagram-profile-mock">
+                                <header class="profile-header">
+                                    <div class="profile-info">
+                                        <img class="profile-pic" id="preview-avatar" src="assets/images/default-avatar.svg" alt="Profile">
+                                        <div class="profile-stats">
+                                            <div class="stat">
+                                                <span class="count" id="preview-posts">0</span>
+                                                <span class="label">posts</span>
+                                            </div>
+                                            <div class="stat">
+                                                <span class="count animate-counter" id="preview-followers">0</span>
+                                                <span class="label">followers</span>
+                                            </div>
+                                            <div class="stat">
+                                                <span class="count" id="preview-following">0</span>
+                                                <span class="label">following</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="profile-bio">
+                                        <h4 class="display-name" id="preview-name">Your Name</h4>
+                                        <p class="bio-text" id="preview-bio">Your bio will appear here...</p>
+                                        <a class="external-link" id="preview-website" target="_blank"></a>
+                                    </div>
+                                </header>
+                                
+                                <!-- Recent Posts Grid -->
+                                <div class="posts-grid" id="preview-posts-grid">
+                                    <div class="post-placeholder">
+                                        <i class="fas fa-image"></i>
+                                        <span>No posts available</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Settings Section -->
+                <section id="settings" class="content-section">
+                    <div class="settings-container">
+                        <div class="settings-card glass" data-aos="fade-up">
+                            <h3>Account Settings</h3>
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="instagram-username">Instagram Username</label>
+                                    <input type="text" id="instagram-username" class="form-input" placeholder="@yourusername">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="notification-email">Email for Notifications</label>
+                                    <input type="email" id="notification-email" class="form-input" placeholder="your@email.com">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="email-notifications" checked>
+                                        <span class="checkmark"></span>
+                                        Email notifications
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="browser-notifications" checked>
+                                        <span class="checkmark"></span>
+                                        Browser notifications
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    <span>Save Settings</span>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="danger-zone glass" data-aos="fade-up" data-aos-delay="100">
+                            <h3>Danger Zone</h3>
+                            <div class="danger-content">
+                                <p>These actions cannot be undone. Please be careful.</p>
+                                <div class="danger-buttons">
+                                    <button class="btn btn-outline btn-danger" id="reset-data">
+                                        <i class="fas fa-refresh"></i>
+                                        <span>Reset All Data</span>
+                                    </button>
+                                    <button class="btn btn-danger" id="delete-account">
+                                        <i class="fas fa-trash"></i>
+                                        <span>Delete Account</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3>Connect Your Instagram</h3>
+                <button class="modal-close" id="close-auth-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-options">
+                    <button class="btn btn-primary btn-large auth-btn" id="github-auth">
+                        <i class="fab fa-github"></i>
+                        <span>Continue with GitHub</span>
+                    </button>
+                    <div class="divider">or</div>
+                    <form class="manual-auth-form">
+                        <div class="form-group">
+                            <label for="manual-username">Instagram Username</label>
+                            <input type="text" id="manual-username" class="form-input" placeholder="@yourusername" required>
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-large">
+                            <i class="fab fa-instagram"></i>
+                            <span>Connect Manually</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="config/api-keys.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/instagram-api.js"></script>
+    <script src="js/growth-engine.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/organic-growth.js"></script>
+    <script src="js/dashboard.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    </script>
+</body>
+</html>
